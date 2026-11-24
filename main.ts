@@ -1,22 +1,25 @@
 // The Dog Ate My Homework: Funniest Excuse
-// Writes one line: a dog's excuse, in the dog's own voice.
-// Dog logic: the homework was on the dog's bed, and in dog law
-// anything on the bed belongs to the dog. No apology, no shame.
+// Writes one line to /output/entry.txt: the excuse a dog gives after
+// being caught eating the homework, in the dog's own voice.
+//
+// The dog's logic: the homework was on its bed, and dog law says
+// anything on the bed belongs to the dog. So it did nothing wrong —
+// and, naturally, it would like a treat now.
 import { mkdirSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 
-const repoRoot = dirname(fileURLToPath(import.meta.url));
-const outDir = process.env.MAKEFUN_OUTPUT_DIR || "/output";
-mkdirSync(outDir, { recursive: true });
+const EXCUSE =
+  "It was on my bed. In dog law, that's mine. I did nothing wrong, and I would like a treat now.";
 
-const MAX_CHARS = 200;
-const line =
-  "It was on my bed. In dog law, anything on my bed is mine. I was only following the rules.";
-
-if (line.length >= MAX_CHARS) {
-  throw new Error(`entry too long: ${line.length} chars (gate is under ${MAX_CHARS})`);
+function main(): void {
+  const chars = [...EXCUSE].length;
+  if (chars < 1 || chars > 200 || EXCUSE.trim().length === 0) {
+    throw new Error(`entry fails gate: ${chars} chars (need 1-200, non-blank)`);
+  }
+  const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
+  mkdirSync(outDir, { recursive: true });
+  writeFileSync(join(outDir, "entry.txt"), EXCUSE + "\n", "utf8");
+  console.log(`wrote entry.txt: ${chars} chars`);
 }
 
-writeFileSync(join(outDir, "entry.txt"), line + "\n", "utf8");
-console.log(`wrote ${line.length} chars from ${repoRoot}`);
+main();
